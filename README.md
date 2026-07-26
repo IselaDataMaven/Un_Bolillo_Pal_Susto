@@ -121,3 +121,60 @@ Viaja a través de las dimensiones del folclor mexicano:
   [ Centro Histórico ]
             ↓
   [ 🪦 Mictlán (Nivel Final) ]
+
+
+
+
+
+
+
+
+
+
+
+<p align="center">
+
+<img src="docs/images/logo.gif" width="900"/>
+
+</p>
+
+<p align="center">
+
+<img src="docs/gifs/chicles_saluda.gif" width="220"/>
+
+</p>
+
+<h2 align="center">
+
+🇲🇽 Beat'em Up • Plataforma • Pixel Art • Folclore Mexicano 🇲🇽
+
+</h2>
+
+<p align="center">
+
+Porque en México no usamos pociones...
+
+<b>¡Nos echamos un bolillo pa'l susto!</b>
+
+</p>
+
+---
+
+<p align="center">
+
+<img src="https://img.shields.io/badge/🎮-Phaser_3-blue?style=for-the-badge">
+
+<img src="https://img.shields.io/badge/☁️-AWS_Bedrock-orange?style=for-the-badge">
+
+<img src="https://img.shields.io/badge/💻-JavaScript-yellow?style=for-the-badge">
+
+<img src="https://img.shields.io/badge/🇲🇽-Made_in_Mexico-success?style=for-the-badge">
+
+</p>
+
+
+
+
+
+
+  
