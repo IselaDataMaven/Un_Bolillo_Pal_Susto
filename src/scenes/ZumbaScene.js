@@ -4,6 +4,14 @@ class ZumbaScene extends Phaser.Scene {
   }
 
   create() {
+    // --- SCENE RESET ---
+    this.score = 0;
+    this.combo = 0;
+    this.round = 0;
+    this.sequenceActive = false;
+    this.arrowSprites = [];
+    this._emergencyTriggered = false;
+
     var w = this.cameras.main.width;
     var h = this.cameras.main.height;
 
@@ -53,6 +61,14 @@ class ZumbaScene extends Phaser.Scene {
       backgroundColor: '#00000088',
       padding: { x: 6, y: 3 }
     }).setDepth(100);
+
+    // Combo display
+    this.comboText = this.add.text(this.cameras.main.width - 16, 16, '', {
+      font: '16px monospace',
+      fill: '#ffcc00',
+      stroke: '#000000',
+      strokeThickness: 3
+    }).setOrigin(1, 0).setDepth(100);
 
     // Sequence display area
     this.sequenceText = this.add.text(w / 2, 80, '', {
@@ -148,6 +164,9 @@ class ZumbaScene extends Phaser.Scene {
       return;
     }
 
+    // Clean previous arrows
+    this.cleanArrows();
+
     // Generate sequence (length increases with rounds)
     var length = Math.min(3 + Math.floor(this.round / 2), 6);
     var arrows = ['left', 'up', 'right', 'down'];
@@ -159,17 +178,38 @@ class ZumbaScene extends Phaser.Scene {
     this.playerInput = [];
     this.sequenceActive = true;
 
-    // Display the sequence
-    var display = this.currentSequence.map(function(dir) {
-      switch (dir) {
-        case 'left': return '\u2190';
-        case 'up': return '\u2191';
-        case 'right': return '\u2192';
-        case 'down': return '\u2193';
+    // Display the sequence with large animated arrows
+    this.sequenceText.setText('');
+    this.arrowSprites = [];
+    var startX = (this.cameras.main.width / 2) - ((this.currentSequence.length - 1) * 35);
+    for (var si = 0; si < this.currentSequence.length; si++) {
+      var symbol = '';
+      var color = '#ffcc00';
+      switch (this.currentSequence[si]) {
+        case 'left': symbol = '\u2190'; color = '#44ccff'; break;
+        case 'up': symbol = '\u2191'; color = '#44ff44'; break;
+        case 'right': symbol = '\u2192'; color = '#ff44ff'; break;
+        case 'down': symbol = '\u2193'; color = '#ffaa00'; break;
       }
-    }).join(' ');
+      var arrow = this.add.text(startX + si * 70, 80, symbol, {
+        font: '42px monospace',
+        fill: color,
+        stroke: '#000000',
+        strokeThickness: 6
+      }).setOrigin(0.5).setDepth(110).setScale(0.5);
+      this.arrowSprites.push(arrow);
+      // Pop-in animation with delay per arrow
+      this.tweens.add({
+        targets: arrow,
+        scale: { from: 0.5, to: 2.0 },
+        duration: 150,
+        delay: si * 80,
+        ease: 'Back.easeOut'
+      });
+    }
+    // Pulse the first arrow (current target)
+    this.pulseCurrentArrow(0);
 
-    this.sequenceText.setText(display);
     this.feedbackText.setText('Ronda ' + this.round + '/' + this.maxRounds);
 
     // Chichi demonstrates
@@ -196,8 +236,40 @@ class ZumbaScene extends Phaser.Scene {
       // Correct!
       this.playerInput.push(dir);
       this.combo++;
-      this.feedbackText.setText('Bien! x' + this.combo);
+
+      // Arrow hit effect: flash white, scale up, fade out
+      var hitArrow = this.arrowSprites[expectedIndex];
+      if (hitArrow && hitArrow.active) {
+        hitArrow.setStyle({ fill: '#ffffff' });
+        this.tweens.add({
+          targets: hitArrow,
+          scale: 2.4,
+          alpha: 0,
+          duration: 150,
+          onComplete: function() { if (hitArrow.active) hitArrow.destroy(); }
+        });
+      }
+
+      // Combo feedback
+      this.feedbackText.setText('x' + this.combo);
       this.feedbackText.setStyle({ fill: '#44ff44' });
+      this.comboText.setText(this.combo > 1 ? 'Combo x' + this.combo : '');
+      // Combo scale pulse
+      this.tweens.add({
+        targets: this.feedbackText,
+        scale: { from: 1.3, to: 1.0 },
+        duration: 100
+      });
+
+      // Streak milestones
+      if (this.combo === 5 || this.combo === 10 || this.combo === 20) {
+        this.showStreakAnnounce(this.combo);
+      }
+
+      // Pulse next arrow
+      if (this.playerInput.length < this.currentSequence.length) {
+        this.pulseCurrentArrow(this.playerInput.length);
+      }
 
       // Chicles dances
       this.chicles.anims.play('chicles-dance', true);
@@ -208,6 +280,7 @@ class ZumbaScene extends Phaser.Scene {
         this.score += 100 + (this.combo * 10);
         this.scoreText.setText('Puntos: ' + this.score);
         this.sequenceText.setText('PERFECTO!');
+        this.cameras.main.flash(100, 255, 255, 255, false);
 
         this.time.delayedCall(1200, () => {
           this.startRound();
@@ -217,9 +290,24 @@ class ZumbaScene extends Phaser.Scene {
       // Wrong!
       this.combo = 0;
       this.sequenceActive = false;
+      this.comboText.setText('');
+
+      // Arrow miss effect: turn red, fade out
+      var missArrow = this.arrowSprites[expectedIndex];
+      if (missArrow && missArrow.active) {
+        missArrow.setStyle({ fill: '#ff0000' });
+        this.tweens.add({
+          targets: missArrow,
+          alpha: 0.3,
+          duration: 150,
+          onComplete: function() { if (missArrow.active) missArrow.destroy(); }
+        });
+      }
+
       this.feedbackText.setText('ERROR!');
       this.feedbackText.setStyle({ fill: '#ff4444' });
       this.chicles.setTint(0xff4444);
+      this.cameras.main.shake(100, 0.005);
 
       // Show dona cucaracha briefly as punishment
       this.dona.setVisible(true);
@@ -227,6 +315,9 @@ class ZumbaScene extends Phaser.Scene {
         this.dona.setVisible(false);
         this.chicles.clearTint();
       });
+
+      // Clean remaining arrows
+      this.cleanArrows();
 
       // Retry same round after delay
       this.time.delayedCall(1500, () => {
@@ -260,8 +351,62 @@ class ZumbaScene extends Phaser.Scene {
     this.chicles.anims.play('chicles-dance', true);
 
     this.time.delayedCall(3000, () => {
-      this.scene.start('VictoryScene', { score: this.score });
+      this.scene.start('Level3Scene', { score: this.score });
     });
+  }
+
+  pulseCurrentArrow(index) {
+    var arrow = this.arrowSprites[index];
+    if (!arrow || !arrow.active) return;
+    this.tweens.add({
+      targets: arrow,
+      scale: { from: 2.0, to: 2.15 },
+      duration: 400,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+  }
+
+  showStreakAnnounce(count) {
+    var w = this.cameras.main.width;
+    var msg = 'RACHA x' + count + '!';
+    var color = count >= 20 ? '#ff00ff' : (count >= 10 ? '#ff4400' : '#ffcc00');
+    var announce = this.add.text(w / 2, 200, msg, {
+      font: '28px monospace',
+      fill: color,
+      stroke: '#000000',
+      strokeThickness: 5
+    }).setOrigin(0.5).setDepth(300).setScale(0.5);
+
+    this.tweens.add({
+      targets: announce,
+      scale: { from: 0.5, to: 1.5 },
+      duration: 300,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: announce,
+          alpha: 0,
+          y: 170,
+          duration: 800,
+          delay: 500,
+          onComplete: function() { if (announce.active) announce.destroy(); }
+        });
+      }
+    });
+    this.cameras.main.shake(80, 0.004);
+  }
+
+  cleanArrows() {
+    if (this.arrowSprites) {
+      for (var i = 0; i < this.arrowSprites.length; i++) {
+        if (this.arrowSprites[i] && this.arrowSprites[i].active) {
+          this.arrowSprites[i].destroy();
+        }
+      }
+      this.arrowSprites = [];
+    }
   }
 
   update() {

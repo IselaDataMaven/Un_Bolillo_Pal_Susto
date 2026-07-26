@@ -4,6 +4,15 @@ class Level1Scene extends Phaser.Scene {
   }
 
   create() {
+    // --- SCENE RESET (clean state for replays) ---
+    this.bossDefeated = false;
+    this.bossActive = false;
+    this.bossIntroCompleted = false;
+    this.gameOver = false;
+    this._emergencyTriggered = false;
+    this._tamaleroMusicTriggered = false;
+    this.levelCompleted = false;
+
     // --- WORLD SETUP ---
     const worldWidth = 4800;
     const worldHeight = 450;
@@ -654,14 +663,7 @@ class Level1Scene extends Phaser.Scene {
       this.bossActive = true;
       this.bossIntroCompleted = true;
       this.bossNameText.setVisible(true);
-      this.bossHPBar.setVisible(true);
-      this.drawBossHP();
       this.damageCooldownUntil = this.time.now + 800;
-
-      // EMERGENCY HACKATHON BYPASS: Complete level after 5 seconds
-      this.time.delayedCall(5000, () => {
-        this.completeLevel1Emergency();
-      });
 
       return;
     }
@@ -780,29 +782,10 @@ class Level1Scene extends Phaser.Scene {
   }
 
   damageTamalero(source) {
+    if (this.levelCompleted) return;
     if (this.bossDefeated) return;
-    if (this.tamaleroHP <= 0) return;
-
-    var prevHP = this.tamaleroHP;
-    this.tamaleroHP -= 1;
-    console.log('[BOSS HIT] HP before=' + prevHP + ' after=' + this.tamaleroHP);
-    this.drawBossHP();
-
-    // Visual feedback only (no disappearing)
-    if (this.tamalero && this.tamalero.active) {
-      this.tamalero.setTint(0xff0000);
-      this.time.delayedCall(300, () => {
-        if (this.tamalero && this.tamalero.active && !this.bossDefeated) {
-          this.tamalero.clearTint();
-        }
-      });
-    }
-
-    // Defeat check
-    if (this.tamaleroHP <= 0) {
-      console.log('[BOSS DEFEATED] triggered');
-      this.defeatTamalero();
-    }
+    console.log('[BOSS HIT]');
+    this.defeatTamalero();
   }
 
   enrageTamalero() {
@@ -898,81 +881,32 @@ class Level1Scene extends Phaser.Scene {
   }
 
   defeatTamalero() {
+    if (this.levelCompleted) return;
+    this.levelCompleted = true;
     this.bossDefeated = true;
     this.bossActive = false;
-    this.tamaleroAttacking = false;
-    this.tamaleroHurt = false;
-    this.bossTransforming = false;
-
-    // Stop boss
-    if (this.tamalero) {
-      this.tamalero.setTint(0x444444);
-      this.tamalero.anims.stop();
-      if (this.tamalero.body) {
-        this.tamalero.setVelocityX(0);
-        this.tamalero.body.setEnable(false);
-      }
-    }
-
-    // Destroy remaining projectiles
-    this.tamalProjectiles.clear(true, true);
-
-    // Remove boss wall
-    if (this.bossWall) {
-      this.bossWall.destroy();
-      this.bossWall = null;
-    }
-
-    // Victory message
-    this.add.text(400, 180, '!Derrotaste al Tamalero!', {
-      font: '20px monospace',
-      fill: '#ff8800',
-      backgroundColor: '#000000cc',
-      padding: { x: 12, y: 8 }
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(300);
-
-    this.add.text(400, 220, '"!Mis tamales...!"', {
-      font: '14px monospace',
-      fill: '#ffcc00',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(300);
-
-    this.score += 100;
-    this.scoreText.setText('Puntos: ' + this.score);
-
-    // AUTO-TRANSITION to Level 2 after 2 seconds
-    this.time.delayedCall(2000, () => {
-      console.log('[LEVEL COMPLETE] -> ZumbaScene');
-      this.gameOver = true;
-      this.scene.start('ZumbaScene', { score: this.score });
-    });
-  }
-
-  completeLevel1Emergency() {
-    // EMERGENCY BYPASS — guarantees Level1 -> ZumbaScene transition
-    if (this._emergencyTriggered) return;
-    this._emergencyTriggered = true;
-    console.log('[EMERGENCY LEVEL COMPLETE] triggered');
-
-    this.bossDefeated = true;
     this.gameOver = true;
-    this.bossActive = false;
+    console.log('[BOSS DEFEATED]');
 
-    // Victory music
-    MusicManager.play(this, 'victoria', { volume: 0.7, loop: false, fadeIn: 500 });
+    // Kill ALL pending timers to prevent any callback from firing
+    this.time.removeAllEvents();
 
-    // Disable tamalero safely
+    // Disable boss completely
     if (this.tamalero) {
-      if (this.tamalero.body) this.tamalero.body.setEnable(false);
       this.tamalero.setTint(0x444444);
+      if (this.tamalero.anims) this.tamalero.anims.stop();
+      if (this.tamalero.body) this.tamalero.body.enable = false;
     }
 
-    // Destroy wall
-    if (this.bossWall) {
-      this.bossWall.destroy();
-      this.bossWall = null;
-    }
+    // Destroy projectiles
+    if (this.tamalProjectiles) this.tamalProjectiles.clear(true, true);
+
+    // Remove wall
+    if (this.bossWall) { this.bossWall.destroy(); this.bossWall = null; }
+
+    // Hide UI
+    if (this.bossNameText) this.bossNameText.setVisible(false);
+    if (this.bossHPBar) this.bossHPBar.setVisible(false);
 
     // Stop player
     if (this.player && this.player.body) {
@@ -980,24 +914,21 @@ class Level1Scene extends Phaser.Scene {
       this.player.setVelocityY(0);
     }
 
-    // Victory text
-    this.add.text(400, 180, '!Derrotaste al Tamalero!', {
-      font: '20px monospace',
-      fill: '#ff8800',
-      backgroundColor: '#000000cc',
-      padding: { x: 12, y: 8 }
+    // Victory text (no tweens, no animations)
+    this.add.text(400, 200, 'El Tamalero fue vencido!', {
+      font: '20px monospace', fill: '#ff8800',
+      backgroundColor: '#000000cc', padding: { x: 12, y: 8 }
     }).setOrigin(0.5).setScrollFactor(0).setDepth(500);
 
-    this.add.text(400, 220, '"!Mis tamales...!"', {
-      font: '14px monospace',
-      fill: '#ffcc00'
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(500);
+    // Music
+    MusicManager.stop();
 
-    // Transition to ZumbaScene after 1 second
-    this.time.delayedCall(1000, () => {
-      console.log('[TRANSITION] Starting ZumbaScene');
-      this.scene.start('ZumbaScene', { score: this.score });
-    });
+    // Transition in 500ms — single execution guaranteed by levelCompleted flag
+    console.log('[STARTING ZUMBA]');
+    var self = this;
+    setTimeout(function() {
+      self.scene.start('ZumbaScene', { score: self.score });
+    }, 500);
   }
 
   hitByTamalero(player, boss) {
@@ -1271,18 +1202,7 @@ class Level1Scene extends Phaser.Scene {
   }
 
   drawBossHP() {
-    this.bossHPBar.clear();
-    // Background
-    this.bossHPBar.fillStyle(0x333333, 0.8);
-    this.bossHPBar.fillRect(300, 65, 200, 14);
-    // Health fill
-    const hpRatio = Math.max(0, this.tamaleroHP / this.tamaleroMaxHP);
-    const color = hpRatio > 0.5 ? 0xff8800 : (hpRatio > 0.25 ? 0xff4400 : 0xff0000);
-    this.bossHPBar.fillStyle(color, 1);
-    this.bossHPBar.fillRect(300, 65, 200 * hpRatio, 14);
-    // Border
-    this.bossHPBar.lineStyle(2, 0xffffff, 0.8);
-    this.bossHPBar.strokeRect(300, 65, 200, 14);
+    // Boss HP bar removed — Tamalero is a 1-hit transition boss
   }
 
   createTouchControls() {

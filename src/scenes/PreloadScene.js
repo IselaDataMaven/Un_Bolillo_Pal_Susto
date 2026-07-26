@@ -103,6 +103,92 @@ class PreloadScene extends Phaser.Scene {
     this.load.audio('microbusero', 'chicles/sound/microbusero.mp3');
 
     // --- LEVEL 2: ZUMBA ASSETS ---
+
+    // --- LEVEL 4: LABORATORIO ALIENÍGENA ---
+    this.load.audio('nivel4_metro', 'chicles/sound/nivel_4_metro.mp3');
+    this.load.image('lab-bg', 'chicles/ui/metro_nicel_final_4/metro_nicel_final_4.png');
+    // Gusano boss
+    this.load.image('gusano-idle', 'chicles/gusano/idle_gusano_front/idle_gusano_front.png');
+    this.load.image('gusano-bite', 'chicles/gusano/Bite_gusano/Bite_gusano.png');
+    this.load.image('gusano-lash', 'chicles/gusano/Lash_attack_gusano/Lash_attack_gusano.png');
+    this.load.image('gusano-ichor', 'chicles/gusano/Split_ichor/Split_ichor.png');
+    this.load.image('gusano-tentacle', 'chicles/gusano/Tentacle_attack/Tentacle_attack.png');
+    // Abuela
+    this.load.image('abuela-idle', 'chicles/abuela/Idle_abuela_malicius_1/Idle_abuela_malicius_1.png');
+    this.load.image('abuela-chancla1', 'chicles/abuela/Abuela_Aventar_chancla_1/Abuela_Aventar_chancla_1.png');
+    this.load.image('abuela-chancla2', 'chicles/abuela/Abuela_Aventar_chancla_2/Abuela_Aventar_chancla_2.png');
+    this.load.image('abuela-jump', 'chicles/abuela/jump_abuela/jump_abuela.png');
+    this.load.image('abuela-parasite', 'chicles/abuela/parasite_poder/parasite_poder.png');
+    // Aliens
+    this.load.image('alien2', 'chicles/aliens/Alien_2.png');
+    this.load.image('alien3', 'chicles/aliens/Alien_3.png');
+    this.load.image('alien-dr', 'chicles/aliens/Alien_dr_1.png');
+    // Murcielajolote
+    this.load.image('bat-idle', 'chicles/murcielajolote/Idle_murcielajolote/Idle_murcielajolote.png');
+    this.load.image('bat-proj', 'chicles/murcielajolote/Projectil_guano/Projectil_guano.png');
+    // Vacas
+    this.load.image('vaca1', 'chicles/vacas/Vaca_1.png');
+    this.load.image('vaca-choco', 'chicles/vacas/Vaca_chocolate.png');
+    this.load.image('vaca-fresa', 'chicles/vacas/Vaca_fresa.png');
+
+    // --- LEVEL 2: ZUMBA ASSETS ---
+
+    // --- LEVEL 3: HOYO DEL GUSANO ---
+    this.load.audio('nivel3_hoyo', 'chicles/sound/nive_3_hoyo_gusanol.mp3');
+    this.load.image('hoyo-bg-far', 'chicles/ui/hoyo_nivel_3/hoyo_nivel_3.jpg');
+    this.load.image('hoyo-bg-mid', 'chicles/ui/hoyo_nivel_3/hoyo_nivel_3_1.jpg');
+    // Player
+    this.load.image('hoyo-idle', 'chicles/chicles/hoyo_nivel_3_caida_chicles/Idle_caida_1.png');
+    this.load.image('hoyo-caida1', 'chicles/chicles/hoyo_nivel_3_caida_chicles/caida_1.png');
+    this.load.image('hoyo-caida2', 'chicles/chicles/hoyo_nivel_3_caida_chicles/caida_2.png');
+    // Gun + bullets
+    this.load.image('pistola1', 'chicles/poderes/pistola_chicles/pistola_1.png');
+    this.load.image('pistola2', 'chicles/poderes/pistola_chicles/pistola_2.png');
+    this.load.image('misil-chicle1', 'chicles/poderes/pistola_chicles/misil_chicle_1.png');
+    this.load.image('misil-chicle2', 'chicles/poderes/pistola_chicles/misil_chicle_2.png');
+    // Enemies
+    this.load.image('cucaracha1', 'chicles/cucaracha/Cucaracha_1.png');
+    this.load.image('cucaracha2', 'chicles/cucaracha/Cucaracha__2.png');
+    this.load.image('cucaracha3', 'chicles/cucaracha/Cucaracha_3.png');
+    this.load.image('dona-podrida', 'chicles/cucaracha/dona_cucaracha_podrida/Dona_cucaracha_podrida.png');
+    this.load.image('torta-chorro', 'chicles/cucaracha/projectil_torta_chorro/projectil_torta_chorro.png');
+    // Power-ups
+    this.load.image('power-agua', 'chicles/poderes/agua_en_bolsita/Agua_en_bolsita_escudo.png');
+    this.load.image('power-chicharron', 'chicles/poderes/chicharron_preparado/Chicharron_preparado.png');
+    this.load.image('power-chocolate', 'chicles/poderes/chocolate/Chocolate.png');
+    this.load.image('power-combo', 'chicles/poderes/special_combo/Special_combo.png');
+    this.load.image('power-vida', 'chicles/poderes/numero_de_vidas/Numero_vidas.png');
+
+    // --- LEVEL 2: ZUMBA ASSETS ---
+
+    // --- LEVEL 4: LABORATORIO ALIENÍGENA ---
+    this.load.audio('nivel4_metro', 'chicles/sound/nivel_4_metro.mp3');
+    this.load.image('lab-bg', 'chicles/ui/metro_nicel_final_4/metro_nicel_final_4.png');
+    // Gusano boss
+    this.load.image('gusano-idle', 'chicles/gusano/idle_gusano_front/idle_gusano_front.png');
+    this.load.image('gusano-bite', 'chicles/gusano/Bite_gusano/Bite_gusano.png');
+    this.load.image('gusano-lash', 'chicles/gusano/Lash_attack_gusano/Lash_attack_gusano.png');
+    this.load.image('gusano-ichor', 'chicles/gusano/Split_ichor/Split_ichor.png');
+    this.load.image('gusano-tentacle', 'chicles/gusano/Tentacle_attack/Tentacle_attack.png');
+    // Abuela
+    this.load.image('abuela-idle', 'chicles/abuela/Idle_abuela_malicius_1/Idle_abuela_malicius_1.png');
+    this.load.image('abuela-chancla1', 'chicles/abuela/Abuela_Aventar_chancla_1/Abuela_Aventar_chancla_1.png');
+    this.load.image('abuela-chancla2', 'chicles/abuela/Abuela_Aventar_chancla_2/Abuela_Aventar_chancla_2.png');
+    this.load.image('abuela-jump', 'chicles/abuela/jump_abuela/jump_abuela.png');
+    this.load.image('abuela-parasite', 'chicles/abuela/parasite_poder/parasite_poder.png');
+    // Aliens
+    this.load.image('alien2', 'chicles/aliens/Alien_2.png');
+    this.load.image('alien3', 'chicles/aliens/Alien_3.png');
+    this.load.image('alien-dr', 'chicles/aliens/Alien_dr_1.png');
+    // Murcielajolote
+    this.load.image('bat-idle', 'chicles/murcielajolote/Idle_murcielajolote/Idle_murcielajolote.png');
+    this.load.image('bat-proj', 'chicles/murcielajolote/Projectil_guano/Projectil_guano.png');
+    // Vacas
+    this.load.image('vaca1', 'chicles/vacas/Vaca_1.png');
+    this.load.image('vaca-choco', 'chicles/vacas/Vaca_chocolate.png');
+    this.load.image('vaca-fresa', 'chicles/vacas/Vaca_fresa.png');
+
+    // --- LEVEL 2: ZUMBA ASSETS ---
     this.load.image('zumba-bg1', 'chicles/ui/zumba_nivel_2/zumba_1.jpg');
     this.load.image('zumba-bg2', 'chicles/ui/zumba_nivel_2/zumba_2.jpg');
 
