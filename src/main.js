@@ -26,6 +26,7 @@ const config = {
     ZumbaScene,
     Level3Scene,
     Level4Scene,
+    FinalScene,
     VictoryScene,
     GameOverScene,
     CreditsScene

@@ -23,10 +23,11 @@ class Level4Scene extends Phaser.Scene {
     this.bossMaxHP = 10;
     this.bossActive = false;
     this.bossDefeated = false;
+    this.victoryCompleted = false;
 
     var w = this.cameras.main.width;
     var h = this.cameras.main.height;
-    var worldWidth = 2400;
+    var worldWidth = 800;
     var worldHeight = 450;
 
     this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
@@ -54,13 +55,8 @@ class Level4Scene extends Phaser.Scene {
     // (no jumping puzzles in the final level)
 
     // --- VACAS ABDUCIDAS (narrative decoration) ---
-    this.add.image(300, worldHeight - 80, 'vaca1').setScale(0.2).setDepth(2).setAlpha(0.7);
-    this.add.image(700, worldHeight - 80, 'vaca-choco').setScale(0.2).setDepth(2).setAlpha(0.7);
-    this.add.image(1100, worldHeight - 80, 'vaca-fresa').setScale(0.2).setDepth(2).setAlpha(0.7);
-    // Capsule effect
-    this.add.ellipse(300, worldHeight - 80, 60, 100, 0x44ff44, 0.1).setDepth(1);
-    this.add.ellipse(700, worldHeight - 80, 60, 100, 0x44ff44, 0.1).setDepth(1);
-    this.add.ellipse(1100, worldHeight - 80, 60, 100, 0x44ff44, 0.1).setDepth(1);
+    this.add.image(150, worldHeight - 80, 'vaca1').setScale(0.15).setDepth(2).setAlpha(0.5);
+    this.add.image(650, worldHeight - 80, 'vaca-choco').setScale(0.15).setDepth(2).setAlpha(0.5);
 
     // --- PLAYER (uses existing player sprites from PreloadScene) ---
     this.player = this.physics.add.sprite(80, worldHeight - 100, 'player-idle');
@@ -91,14 +87,19 @@ class Level4Scene extends Phaser.Scene {
     this.spawnBats();
 
     // --- ABUELA MALICIA — BOSS FINAL (single sprite) ---
-    console.log('[GRANDMA BOSS SPAWN]');
-    this.abuela = this.physics.add.sprite(1800, worldHeight - 120, 'abuela-idle');
-    this.abuela.setScale(0.5).setDepth(9);
-    this.abuela.setFlipX(true);
+    console.log('[GRANDMA SPAWN CALLED]');
+    this.abuela = this.physics.add.sprite(400, 80, 'abuela-idle');
+    this.abuela.setScale(0.5).setDepth(15);
+    this.abuela.setScrollFactor(1);
     this.abuela.body.setAllowGravity(false);
     this.abuela.body.setSize(this.abuela.width * 0.6, this.abuela.height * 0.7);
-    this.abuelaHP = 12;
-    this.abuelaMaxHP = 12;
+    console.log('[GRANDMA CREATED] texture=' + this.abuela.texture.key +
+      ' x=' + this.abuela.x + ' y=' + this.abuela.y +
+      ' visible=' + this.abuela.visible + ' active=' + this.abuela.active +
+      ' alpha=' + this.abuela.alpha + ' scale=' + this.abuela.scaleX +
+      ' depth=' + this.abuela.depth);
+    this.abuelaHP = 15;
+    this.abuelaMaxHP = 15;
     this.abuelaActive = true;
     this.abuelaAttackTime = 0;
     this.abuelaPhase = 1;
@@ -125,7 +126,7 @@ class Level4Scene extends Phaser.Scene {
       delay: 6000, loop: true,
       callback: function() {
         if (this.gameOver || this.levelCompleted) return;
-        var bx = Phaser.Math.Between(200, 1600);
+        var bx = Phaser.Math.Between(100, 700);
         var bl = this.bolilloPickups.create(bx, 100, 'bolillo');
         if (bl && bl.body) { bl.setScale(0.15).setDepth(6); }
       }, callbackScope: this
@@ -161,17 +162,6 @@ class Level4Scene extends Phaser.Scene {
       .setScrollFactor(0).setDepth(99).setStrokeStyle(1, 0xffffff);
     this.add.text(16, 15, '\u2764', { font: '12px sans-serif', fill: '#ff4444' })
       .setScrollFactor(0).setDepth(100);
-
-    // Boss HP bar (top center)
-    this.bossHPBar = this.add.rectangle(300, 50, 200, 12, 0xff4400)
-      .setOrigin(0, 0).setScrollFactor(0).setDepth(100);
-    this.add.rectangle(300, 50, 200, 12).setOrigin(0, 0)
-      .setScrollFactor(0).setDepth(99).setStrokeStyle(1, 0xffffff);
-    this.bossNameText = this.add.text(400, 38, 'GUSANO ESPACIAL', {
-      font: '11px monospace', fill: '#ff8800', stroke: '#000', strokeThickness: 2
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
-    this.bossHPBar.setVisible(false);
-    this.bossNameText.setVisible(false);
 
     this.add.text(w / 2, 16, 'NIVEL 4 - LABORATORIO ALIENIGENA', {
       font: '13px monospace', fill: '#88aaff', stroke: '#000', strokeThickness: 3
@@ -238,7 +228,7 @@ class Level4Scene extends Phaser.Scene {
       if (!a || !a.active) continue;
       var dir = a.getData('dir');
       a.setVelocityX(dir * 40);
-      if (a.x < 50 || a.x > 2350) { a.setData('dir', -dir); }
+      if (a.x < 30 || a.x > 770) { a.setData('dir', -dir); }
     }
   }
 
@@ -251,7 +241,7 @@ class Level4Scene extends Phaser.Scene {
   cleanOffscreen(group) {
     var items = group.getChildren().slice();
     for (var i = 0; i < items.length; i++) {
-      if (items[i].active && (items[i].x < -50 || items[i].x > 2500)) items[i].destroy();
+      if (items[i].active && (items[i].x < -50 || items[i].x > 850)) items[i].destroy();
     }
   }
 
@@ -266,8 +256,8 @@ class Level4Scene extends Phaser.Scene {
   }
 
   spawnBats() {
-    // Bats at player height, spread across the level
-    var positions = [[400, 320], [750, 300], [1100, 310], [1450, 290]];
+    console.log('[MURCIELAJOLOTE SPAWN]');
+    var positions = [[100, 180], [200, 160], [350, 190], [450, 170], [550, 180], [650, 160], [700, 190], [300, 150]];
     for (var i = 0; i < positions.length; i++) {
       var bat = this.bats.create(positions[i][0], positions[i][1], 'bat-idle');
       if (!bat || !bat.body) continue;
@@ -317,12 +307,12 @@ class Level4Scene extends Phaser.Scene {
   }
 
   batHitPlayer(player, bat) {
-    if (this.gameOver || this.time.now < this.damageCooldownUntil) return;
+    if (this.gameOver || this.bossDefeated || this.time.now < this.damageCooldownUntil) return;
     this.applyDamage(1);
   }
 
   projHitPlayer(player, proj) {
-    if (this.gameOver || this.time.now < this.damageCooldownUntil) return;
+    if (this.gameOver || this.bossDefeated || this.time.now < this.damageCooldownUntil) return;
     if (!proj || !proj.active) return;
     proj.destroy();
     this.applyDamage(1);
@@ -331,7 +321,7 @@ class Level4Scene extends Phaser.Scene {
   spawnAliens() {
     console.log('[ALIEN SPAWN]');
     var alienSprites = ['alien2', 'alien3', 'alien-dr'];
-    var positions = [[350, 380], [650, 380], [1000, 380], [1350, 380], [1600, 380]];
+    var positions = [[80, 380], [160, 380], [250, 380], [340, 380], [430, 380], [520, 380], [600, 380], [680, 380], [380, 380], [470, 380]];
     for (var i = 0; i < positions.length; i++) {
       var key = alienSprites[i % alienSprites.length];
       var alien = this.aliens.create(positions[i][0], positions[i][1], key);
@@ -356,7 +346,7 @@ class Level4Scene extends Phaser.Scene {
   }
 
   alienHitPlayer(player, alien) {
-    if (this.gameOver || this.time.now < this.damageCooldownUntil) return;
+    if (this.gameOver || this.bossDefeated || this.time.now < this.damageCooldownUntil) return;
     this.applyDamage(1);
   }
 
@@ -376,14 +366,14 @@ class Level4Scene extends Phaser.Scene {
   updateAbuelaBoss() {
     if (!this.abuela || !this.abuela.active) return;
 
-    // Chase player slowly
+    // Chase player
     var dx = this.player.x - this.abuela.x;
-    var speed = this.abuelaPhase === 2 ? 70 : 40;
+    var speed = this.abuelaPhase >= 3 ? 90 : (this.abuelaPhase === 2 ? 70 : 40);
     if (this.abuela.body) this.abuela.setVelocityX(dx > 0 ? speed : -speed);
     this.abuela.setFlipX(dx < 0);
 
-    // Attack periodically
-    var attackDelay = this.abuelaPhase === 2 ? 1200 : 2000;
+    // Attack periodically (faster in later phases)
+    var attackDelay = this.abuelaPhase >= 3 ? 800 : (this.abuelaPhase === 2 ? 1200 : 2000);
     if (this.time.now > this.abuelaAttackTime + attackDelay) {
       this.abuelaAttackTime = this.time.now;
       this.abuelaAttack();
@@ -402,14 +392,14 @@ class Level4Scene extends Phaser.Scene {
 
     // Fire parasite_poder projectiles in spread pattern
     var baseAngle = Math.atan2(this.player.y - this.abuela.y, this.player.x - this.abuela.x);
-    var count = this.abuelaPhase === 2 ? 5 : 3;
+    var count = this.abuelaPhase >= 3 ? 7 : (this.abuelaPhase === 2 ? 5 : 3);
     for (var i = 0; i < count; i++) {
-      var angle = baseAngle + (i - Math.floor(count / 2)) * 0.25;
+      var angle = baseAngle + (i - Math.floor(count / 2)) * 0.2;
       var proj = this.abuelaProjectiles.create(this.abuela.x, this.abuela.y - 10, 'abuela-parasite');
       if (!proj || !proj.body) continue;
       proj.setScale(0.2).setDepth(7);
       proj.body.setAllowGravity(false);
-      var projSpeed = this.abuelaPhase === 2 ? 240 : 170;
+      var projSpeed = this.abuelaPhase >= 3 ? 280 : (this.abuelaPhase === 2 ? 240 : 170);
       proj.setVelocityX(Math.cos(angle) * projSpeed);
       proj.setVelocityY(Math.sin(angle) * projSpeed);
     }
@@ -420,7 +410,7 @@ class Level4Scene extends Phaser.Scene {
     if (this.bossDefeated || !bullet || !bullet.active) return;
     bullet.destroy();
     this.abuelaHP--;
-    console.log('[WORM DAMAGE] HP=' + this.abuelaHP);
+    console.log('[BOSS HP] hp=' + this.abuelaHP);
     this.updateBossHPBar();
 
     if (this.abuela && this.abuela.active) {
@@ -431,6 +421,7 @@ class Level4Scene extends Phaser.Scene {
     // Phase 2 at 50%
     if (this.abuelaPhase === 1 && this.abuelaHP <= Math.floor(this.abuelaMaxHP / 2)) {
       this.abuelaPhase = 2;
+      console.log('[BOSS PHASE 2]');
       this.cameras.main.shake(300, 0.008);
       if (this.abuela && this.abuela.active) this.abuela.setTexture('abuela-parasite');
       this.time.delayedCall(500, () => {
@@ -438,7 +429,16 @@ class Level4Scene extends Phaser.Scene {
       });
     }
 
+    // Phase 3 at 25%
+    if (this.abuelaPhase === 2 && this.abuelaHP <= Math.floor(this.abuelaMaxHP / 4)) {
+      this.abuelaPhase = 3;
+      console.log('[BOSS PHASE 3]');
+      this.cameras.main.shake(400, 0.012);
+    }
+
     if (this.abuelaHP <= 0) {
+      console.log('[BOSS ZERO HP]');
+      console.log('[CALL defeatBoss]');
       this.defeatBoss();
     }
   }
@@ -456,15 +456,59 @@ class Level4Scene extends Phaser.Scene {
 
   defeatBoss() {
     if (this.bossDefeated) return;
+    // ABSOLUTE VICTORY LOCK — nothing can override this
+    this.victoryCompleted = true;
     this.bossDefeated = true;
-    console.log('[GRANDMA SAVED]');
+    this.levelCompleted = true;
+    this.gameOver = true;
+    console.log('[VICTORY LOCK ENABLED]');
+    console.log('[ENTER defeatBoss]');
+    console.log('[GRANDMA DEFEATED]');
 
+    // --- STOP EVERYTHING ---
+    console.log('[STOP ALL ENEMIES]');
+    this.time.removeAllEvents();
+
+    // Disable boss
     if (this.abuela && this.abuela.active) {
       this.abuela.clearTint();
       this.abuela.setTexture('abuela-idle');
       if (this.abuela.body) this.abuela.body.enable = false;
     }
 
+    // Destroy all enemy projectiles
+    if (this.abuelaProjectiles) this.abuelaProjectiles.clear(true, true);
+    if (this.batProjectiles) this.batProjectiles.clear(true, true);
+
+    // Disable all bats
+    var batList = this.bats.getChildren().slice();
+    for (var i = 0; i < batList.length; i++) {
+      if (batList[i] && batList[i].active) {
+        if (batList[i].body) batList[i].body.enable = false;
+        batList[i].setAlpha(0.3);
+      }
+    }
+
+    // Disable all aliens
+    var alienList = this.aliens.getChildren().slice();
+    for (var j = 0; j < alienList.length; j++) {
+      if (alienList[j] && alienList[j].active) {
+        if (alienList[j].body) alienList[j].body.enable = false;
+        alienList[j].setAlpha(0.3);
+      }
+    }
+
+    // Make player invincible (set cooldown far into future)
+    this.damageCooldownUntil = this.time.now + 999999;
+    if (this.player && this.player.active) {
+      this.player.clearTint();
+      this.player.setAlpha(1);
+    }
+
+    // Stop music
+    MusicManager.stop();
+
+    // Boss HP bar
     this.bossHPBar.setVisible(false);
     this.bossNameText.setText('Abuela Libre!');
     this.bossNameText.setStyle({ fill: '#44ff88' });
@@ -499,11 +543,13 @@ class Level4Scene extends Phaser.Scene {
     console.log('[STARTING VICTORY]');
     var self = this;
     setTimeout(function() {
-      self.scene.start('VictoryScene', { score: self.score });
-    }, 3000);
+      console.log('[START FINAL SCENE]');
+      self.scene.start('FinalScene');
+    }, 2000);
   }
 
   applyDamage(amount) {
+    if (this.bossDefeated) return;
     if (this.time.now < this.damageCooldownUntil) return;
     this.damageCooldownUntil = this.time.now + 1500;
     this.playerHP -= amount;
@@ -525,6 +571,12 @@ class Level4Scene extends Phaser.Scene {
     });
 
     if (this.playerHP <= 0) {
+      // VICTORY LOCK: if boss was defeated, player cannot lose
+      if (this.victoryCompleted || this.bossDefeated) {
+        console.log('[GAMEOVER BLOCKED] victory takes priority');
+        this.playerHP = 1;
+        return;
+      }
       this.gameOver = true;
       MusicManager.stop();
       this.time.removeAllEvents();
@@ -533,6 +585,7 @@ class Level4Scene extends Phaser.Scene {
       }).setOrigin(0.5).setScrollFactor(0).setDepth(500);
       var self = this;
       setTimeout(function() {
+        if (self.victoryCompleted) return;
         self.scene.start('GameOverScene', { score: self.score });
       }, 2000);
     }

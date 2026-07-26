@@ -123,6 +123,12 @@ class PreloadScene extends Phaser.Scene {
     this.load.image('alien2', 'chicles/aliens/Alien_2.png');
     this.load.image('alien3', 'chicles/aliens/Alien_3.png');
     this.load.image('alien-dr', 'chicles/aliens/Alien_dr_1.png');
+
+    // Final cinematic
+    this.load.audio('nivel_final_victoria', 'chicles/sound/nivel_final_victoria.mp3');
+    this.load.image('final-1', 'chicles/ui/final/final_1.jpg');
+    this.load.image('final-2', 'chicles/ui/final/final_salva_a_la_abuela_2.jpg');
+    this.load.image('final-3', 'chicles/ui/final/final_fin_3.jpg');
     // Murcielajolote
     this.load.image('bat-idle', 'chicles/murcielajolote/Idle_murcielajolote/Idle_murcielajolote.png');
     this.load.image('bat-proj', 'chicles/murcielajolote/Projectil_guano/Projectil_guano.png');
@@ -180,6 +186,12 @@ class PreloadScene extends Phaser.Scene {
     this.load.image('alien2', 'chicles/aliens/Alien_2.png');
     this.load.image('alien3', 'chicles/aliens/Alien_3.png');
     this.load.image('alien-dr', 'chicles/aliens/Alien_dr_1.png');
+
+    // Final cinematic
+    this.load.audio('nivel_final_victoria', 'chicles/sound/nivel_final_victoria.mp3');
+    this.load.image('final-1', 'chicles/ui/final/final_1.jpg');
+    this.load.image('final-2', 'chicles/ui/final/final_salva_a_la_abuela_2.jpg');
+    this.load.image('final-3', 'chicles/ui/final/final_fin_3.jpg');
     // Murcielajolote
     this.load.image('bat-idle', 'chicles/murcielajolote/Idle_murcielajolote/Idle_murcielajolote.png');
     this.load.image('bat-proj', 'chicles/murcielajolote/Projectil_guano/Projectil_guano.png');
