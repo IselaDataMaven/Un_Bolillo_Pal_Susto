@@ -192,6 +192,15 @@ class Level1Scene extends Phaser.Scene {
     this.attackKeyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
     this.attackKeyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 
+    // TEMP: Track S key to diagnose freeze
+    this.input.keyboard.on('keydown-S', function() {
+      console.log('[KEY S PRESSED] isAttacking=' + this.isAttacking +
+        ' isHurt=' + this.isHurt +
+        ' gameOver=' + this.gameOver +
+        ' bossActive=' + this.bossActive +
+        ' vx=' + Math.round(this.player.body.velocity.x));
+    }, this);
+
     // --- STATE ---
     this.isAttacking = false;
     this.facingRight = true;
@@ -218,6 +227,7 @@ class Level1Scene extends Phaser.Scene {
     // Attack animation complete
     this.player.on('animationcomplete-attack', () => {
       this.isAttacking = false;
+      console.log('[ATTACK END] animationcomplete fired. time=' + this.time.now);
     });
 
     // Safety: max attack duration to prevent permanent freeze
@@ -267,12 +277,13 @@ class Level1Scene extends Phaser.Scene {
     }).setScrollFactor(0).setDepth(100);
 
     // --- WIN ZONE (end of level) ---
-    const winZone = this.add.rectangle(worldWidth - 50, worldHeight - 60, 40, 80, 0x00ff00, 0.5);
+    var winZone = this.add.zone(worldWidth - 50, worldHeight - 40, 60, 80);
     this.physics.add.existing(winZone, true);
     this.physics.add.overlap(this.player, winZone, this.winLevel, null, this);
 
-    // Win flag marker
-    this.add.text(worldWidth - 70, worldHeight - 110, 'META', {
+    // Win flag marker (visual only, no physics)
+    this.add.rectangle(worldWidth - 50, worldHeight - 60, 10, 60, 0x00ff00, 0.6).setDepth(1);
+    this.add.text(worldWidth - 70, worldHeight - 100, 'META', {
       font: '12px monospace',
       fill: '#00ff00'
     });
@@ -283,6 +294,33 @@ class Level1Scene extends Phaser.Scene {
     // --- TOUCH CONTROLS ---
     this.touchControls = { left: false, right: false, jump: false, attack: false };
     this.createTouchControls();
+
+    // --- TEMP DIAGNOSTIC: 100ms interval, only while near boss ---
+    this._diagActive = false;
+    this.time.addEvent({
+      delay: 100,
+      loop: true,
+      callback: function() {
+        if (!this.bossActive && this.player && this.tamalero) {
+          var d = Math.abs(this.player.x - this.tamalero.x);
+          if (d < 400) { this._diagActive = true; }
+        }
+        if (!this._diagActive) return;
+        console.log('[DIAG100] bossActive=' + this.bossActive +
+          ' introActive=' + this.bossIntroActive +
+          ' isAttacking=' + this.isAttacking +
+          ' atkAge=' + (this.isAttacking ? (this.time.now - this.attackStartTime) : 0) +
+          ' isHurt=' + this.isHurt +
+          ' onGround=' + (this.player.body ? (this.player.body.touching.down || this.player.body.blocked.down) : 'N/A') +
+          ' vx=' + (this.player.body ? Math.round(this.player.body.velocity.x) : 'N/A') +
+          ' vy=' + (this.player.body ? Math.round(this.player.body.velocity.y) : 'N/A') +
+          ' pActive=' + this.player.active +
+          ' pVisible=' + this.player.visible +
+          ' gameOver=' + this.gameOver +
+          ' bodyEnabled=' + (this.player.body ? this.player.body.enable : 'N/A'));
+      },
+      callbackScope: this
+    });
   }
 
   update() {
@@ -336,6 +374,7 @@ class Level1Scene extends Phaser.Scene {
         // Ground attack - melee
         this.isAttacking = true;
         this.attackStartTime = this.time.now;
+        console.log('[ATTACK START] time=' + this.time.now + ' onGround=' + onGround);
         this.touchControls.attack = false;
         this.player.setVelocityX(0);
         this.player.anims.play('attack', true);
@@ -492,7 +531,7 @@ class Level1Scene extends Phaser.Scene {
 
     if (isStomping) {
       enemy.destroy();
-      player.setVelocityY(-200);
+      if (player && player.body) player.setVelocityY(-200);
       this.score += 25;
       this.scoreText.setText('Puntos: ' + this.score);
     } else {
@@ -517,32 +556,26 @@ class Level1Scene extends Phaser.Scene {
       }
     });
 
-    // Also check boss damage
-    if (this.bossActive && !this.bossDefeated && this.tamalero && this.tamalero.active) {
-      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.tamalero.x, this.tamalero.y);
-      const inFront = this.facingRight ? (this.tamalero.x > this.player.x) : (this.tamalero.x < this.player.x);
-      var bossRange = this.powerMode ? 150 : 120;
-      if (dist < bossRange && inFront) {
-        this.damageTamalero();
-      }
-    }
+    // Boss damage: ONLY via bolillo projectiles (melee disabled for balance)
   }
 
   winLevel() {
+    console.log('[WIN ZONE] bossDefeated=' + this.bossDefeated);
     if (this.gameOver) return;
-    // Prevent winning without defeating boss
     if (!this.bossDefeated) return;
+    console.log('[LEVEL COMPLETE] Score=' + this.score);
     this.gameOver = true;
-    this.player.setVelocityX(0);
-    this.player.setVelocityY(0);
+    if (this.player && this.player.body) {
+      this.player.setVelocityX(0);
+      this.player.setVelocityY(0);
+    }
     this.showGameOverScreen(true);
   }
 
   showGameOverScreen(won) {
-    // Brief pause then transition
     this.time.delayedCall(800, () => {
       if (won) {
-        // Level 1 complete -> advance to Level 2 (Zumba)
+        console.log('[START LEVEL 2]');
         this.scene.start('ZumbaScene', { score: this.score });
       } else {
         this.scene.start('GameOverScene', { score: this.score });
@@ -564,14 +597,20 @@ class Level1Scene extends Phaser.Scene {
     this.tamalero = this.physics.add.sprite(bossX, bossY, 'tamalero-idle1');
     this.tamalero.setScale(0.55);
     this.tamalero.setCollideWorldBounds(true);
+
+    // TRACK: log if tamalero is ever destroyed unexpectedly
+    this.tamalero.on('destroy', () => {
+      console.log('[BOSS REMOVED] DESTROYED! HP=' + this.tamaleroHP + ' bossDefeated=' + this.bossDefeated);
+      console.trace();
+    });
     this.tamalero.body.setSize(this.tamalero.width * 0.5, this.tamalero.height * 0.7);
     this.tamalero.body.setOffset(this.tamalero.width * 0.25, this.tamalero.height * 0.3);
     this.tamalero.setDepth(10);
     this.tamalero.setFlipX(true);
 
     // Boss state
-    this.tamaleroHP = 5;
-    this.tamaleroMaxHP = 5;
+    this.tamaleroHP = 8;
+    this.tamaleroMaxHP = 8;
     this.tamaleroCooldown = 0;
     this.tamaleroAttacking = false;
     this.tamaleroHurt = false;
@@ -608,7 +647,16 @@ class Level1Scene extends Phaser.Scene {
   }
 
   updateTamalero() {
-    if (this.bossDefeated || !this.tamalero || !this.tamalero.active) return;
+    if (this.bossDefeated) return;
+    if (!this.tamalero) return;
+    if (!this.tamalero.active) {
+      if (!this._loggedInactive) {
+        this._loggedInactive = true;
+        console.log('[BOSS REMOVED] tamalero.active=false! HP=' + this.tamaleroHP);
+        console.trace();
+      }
+      return;
+    }
 
     var distToPlayer = Math.abs(this.player.x - this.tamalero.x);
 
@@ -628,10 +676,10 @@ class Level1Scene extends Phaser.Scene {
     // Contain boss in arena
     if (this.tamalero.x < this.bossArenaMinX) {
       this.tamalero.x = this.bossArenaMinX;
-      this.tamalero.setVelocityX(0);
+      if (this.tamalero.body) this.tamalero.setVelocityX(0);
     } else if (this.tamalero.x > this.bossArenaMaxX) {
       this.tamalero.x = this.bossArenaMaxX;
-      this.tamalero.setVelocityX(0);
+      if (this.tamalero.body) this.tamalero.setVelocityX(0);
     }
 
     // Cooldown
@@ -643,7 +691,7 @@ class Level1Scene extends Phaser.Scene {
     if (this.tamaleroAttacking && this.time.now > (this._bossAttackStart || 0) + 1000) {
       this.tamaleroAttacking = false;
     }
-    if (this.tamaleroHurt && this.time.now > (this._bossHurtStart || 0) + 500) {
+    if (this.tamaleroHurt && this.time.now > (this._bossHurtStart || 0) + 800) {
       this.tamaleroHurt = false;
     }
     if (this.bossTransforming && this.time.now > (this._bossTransformStart || 0) + 3500) {
@@ -659,19 +707,19 @@ class Level1Scene extends Phaser.Scene {
     // AI behavior
     var moveSpeed = this.bossEnraged ? 112 : 80;
     if (distToPlayer < 100) {
-      this.tamalero.setVelocityX(0);
+      if (this.tamalero.body) this.tamalero.setVelocityX(0);
       if (this.tamaleroCooldown <= 0) {
         this.tamaleroMelee();
       }
     } else if (distToPlayer < (this.bossEnraged ? 400 : 300)) {
       var dir = this.player.x < this.tamalero.x ? -1 : 1;
-      this.tamalero.setVelocityX(dir * moveSpeed);
+      if (this.tamalero.body) this.tamalero.setVelocityX(dir * moveSpeed);
       this.tamalero.anims.play('tamalero-run', true);
       if (this.tamaleroCooldown <= 0 && distToPlayer > 150) {
         this.tamaleroAttack();
       }
     } else {
-      this.tamalero.setVelocityX(0);
+      if (this.tamalero.body) this.tamalero.setVelocityX(0);
       this.tamalero.anims.play('tamalero-idle', true);
     }
 
@@ -685,6 +733,8 @@ class Level1Scene extends Phaser.Scene {
     }
   }
   tamaleroMelee() {
+    if (!this._logMelee) { this._logMelee = true; console.log('[FUNC] tamaleroMelee fired'); }
+    if (!this.tamalero || !this.tamalero.body) return;
     this.tamaleroAttacking = true;
     this._bossAttackStart = this.time.now;
     this.tamaleroCooldown = this.bossEnraged ? 105 : 150;
@@ -697,6 +747,7 @@ class Level1Scene extends Phaser.Scene {
   }
 
   tamaleroAttack() {
+    if (!this.tamalero || !this.tamalero.body) return;
     this.tamaleroAttacking = true;
     this._bossAttackStart = this.time.now;
     this.tamaleroCooldown = this.bossEnraged ? 140 : 200;
@@ -714,7 +765,7 @@ class Level1Scene extends Phaser.Scene {
           this.tamalero.y - 10,
           'tamal-projectile'
         );
-        if (!tamal) return;
+        if (!tamal || !tamal.body) return;
         tamal.setScale(0.15);
         tamal.body.setAllowGravity(false);
         tamal.setVelocityX(dir * tamalSpeed);
@@ -734,41 +785,28 @@ class Level1Scene extends Phaser.Scene {
     });
   }
 
-  damageTamalero() {
-    if (this.tamaleroHurt || this.bossDefeated) return;
+  damageTamalero(source) {
+    if (this.bossDefeated) return;
+    if (this.tamaleroHP <= 0) return;
 
-    this.tamaleroHP--;
-    this.tamaleroHurt = true;
-    this._bossHurtStart = this.time.now;
+    var prevHP = this.tamaleroHP;
+    this.tamaleroHP -= 1;
+    console.log('[BOSS HIT] HP before=' + prevHP + ' after=' + this.tamaleroHP);
     this.drawBossHP();
 
-    // Check phase 2 trigger (50% HP, one-time only)
-    if (!this.bossEnraged && this.tamaleroHP <= Math.floor(this.tamaleroMaxHP * 0.5) && this.tamaleroHP > 0) {
-      this.enrageTamalero();
-    }
-
-    // Enhanced boss hit feedback
-    this.tamalero.setTint(0xffffff);
-    this.tamalero.setVelocityX(0);
-    this.cameras.main.shake(80, 0.005);
-    this.showFloatingText(this.tamalero.x, this.tamalero.y - 50, '-1', '#ff4444');
-
-    // Knockback boss slightly
-    const knockDir = this.player.x < this.tamalero.x ? 1 : -1;
-    this.tamalero.setVelocityX(knockDir * 100);
-
-    this.time.delayedCall(200, () => {
-      if (this.tamalero && this.tamalero.active) {
-        if (this.bossEnraged) {
-          this.tamalero.setTint(0xff2200);
-        } else {
+    // Visual feedback only (no disappearing)
+    if (this.tamalero && this.tamalero.active) {
+      this.tamalero.setTint(0xff0000);
+      this.time.delayedCall(300, () => {
+        if (this.tamalero && this.tamalero.active && !this.bossDefeated) {
           this.tamalero.clearTint();
         }
-      }
-      this.tamaleroHurt = false;
-    });
+      });
+    }
 
+    // Defeat check
     if (this.tamaleroHP <= 0) {
+      console.log('[BOSS DEFEATED] triggered');
       this.defeatTamalero();
     }
   }
@@ -781,7 +819,7 @@ class Level1Scene extends Phaser.Scene {
     this._bossTransformStart = this.time.now;
 
     // Pause boss
-    this.tamalero.setVelocityX(0);
+    if (this.tamalero && this.tamalero.body) this.tamalero.setVelocityX(0);
     this.tamaleroAttacking = true;
     this._bossAttackStart = this.time.now;
 
@@ -871,58 +909,56 @@ class Level1Scene extends Phaser.Scene {
     this.tamaleroAttacking = false;
     this.tamaleroHurt = false;
     this.bossTransforming = false;
-    this.tamalero.setTint(0x444444);
-    this.tamalero.anims.stop();
-    this.tamalero.setVelocityX(0);
-    this.tamalero.body.setEnable(false);
+
+    // Stop boss
+    if (this.tamalero) {
+      this.tamalero.setTint(0x444444);
+      this.tamalero.anims.stop();
+      if (this.tamalero.body) {
+        this.tamalero.setVelocityX(0);
+        this.tamalero.body.setEnable(false);
+      }
+    }
 
     // Destroy remaining projectiles
     this.tamalProjectiles.clear(true, true);
 
-    // Remove boss wall to allow access to META
+    // Remove boss wall
     if (this.bossWall) {
       this.bossWall.destroy();
       this.bossWall = null;
     }
 
-    // Victory message with funny dialogue
-    const victoryText = this.add.text(400, 180, '!Derrotaste al Tamalero!', {
+    // Victory message
+    this.add.text(400, 180, '!Derrotaste al Tamalero!', {
       font: '20px monospace',
       fill: '#ff8800',
       backgroundColor: '#000000cc',
       padding: { x: 12, y: 8 }
     }).setOrigin(0.5).setScrollFactor(0).setDepth(300);
 
-    var deathDialogue = this.add.text(400, 220, '"!Mis tamales...!"', {
+    this.add.text(400, 220, '"!Mis tamales...!"', {
       font: '14px monospace',
       fill: '#ffcc00',
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(0.5).setScrollFactor(0).setDepth(300);
 
-    // Boss death particles (minimal)
-    this.spawnParticles(this.tamalero.x, this.tamalero.y, 3, 0xff4400);
-
-    // Fade out boss sprite and victory text after delay
-    this.time.delayedCall(2000, () => {
-      if (this.tamalero) {
-        this.tamalero.setVisible(false);
-      }
-      if (victoryText && victoryText.active) victoryText.destroy();
-      if (deathDialogue && deathDialogue.active) deathDialogue.destroy();
-      if (this.bossNameText) this.bossNameText.setVisible(false);
-      if (this.bossHPBar) {
-        this.bossHPBar.clear();
-        this.bossHPBar.setVisible(false);
-      }
-    });
-
     this.score += 100;
     this.scoreText.setText('Puntos: ' + this.score);
+
+    // AUTO-TRANSITION to Level 2 after 2 seconds
+    this.time.delayedCall(2000, () => {
+      console.log('[LEVEL COMPLETE] -> ZumbaScene');
+      this.gameOver = true;
+      this.scene.start('ZumbaScene', { score: this.score });
+    });
   }
 
   hitByTamalero(player, boss) {
+    if (!this._logHitBoss) { this._logHitBoss = true; console.log('[FUNC] hitByTamalero fired'); }
     if (this.gameOver || !this.bossActive || this.bossDefeated) return;
+    if (!player || !player.body) return;
     if (this.time.now < this.damageCooldownUntil) return;
 
     // Boss contact removes 1 HP
@@ -932,6 +968,7 @@ class Level1Scene extends Phaser.Scene {
 
   hitByTamal(player, tamal) {
     if (this.gameOver) return;
+    if (!player || !player.body || !tamal || !tamal.body) return;
     if (this.time.now < this.damageCooldownUntil) {
       // Still invulnerable, just destroy the projectile
       tamal.destroy();
@@ -1047,11 +1084,11 @@ class Level1Scene extends Phaser.Scene {
       this.player.y - 5,
       'bolillo'
     );
+    if (!proj || !proj.body) return;
     proj.setScale(0.12);
-    proj.body.setAllowGravity(true);
-    proj.body.setBounceY(0.3);
+    proj.body.setAllowGravity(false);
     proj.setVelocityX(dir * 350);
-    proj.setVelocityY(-80);
+    proj.setVelocityY(0);
     proj.setDepth(9);
 
     // Spin animation
@@ -1079,22 +1116,16 @@ class Level1Scene extends Phaser.Scene {
     this.showFloatingText(enemy.x, enemy.y - 20, '+30', '#ffaa44');
   }
 
-  bolilloHitBoss(proj) {
-    if (!this.tamalero || !this.tamalero.active || this.bossDefeated) return;
-    var dist = Phaser.Math.Distance.Between(proj.x, proj.y, this.tamalero.x, this.tamalero.y);
-    if (dist < 60) {
-      proj.destroy();
-      this.damageTamalero();
-      this.showFloatingText(this.tamalero.x, this.tamalero.y - 30, 'HIT!', '#ffaa44');
-      return true;
-    }
-    return false;
-  }
+  // bolilloHitBoss is handled by bolilloHitBossOverlap (physics overlap)
 
   bolilloHitBossOverlap(proj, boss) {
-    if (this.bossDefeated || !this.bossActive || this.tamaleroHurt) return;
+    if (this.bossDefeated || !this.bossActive) return;
+    if (!proj || !proj.active) return;
+    // Per-projectile single-hit guard
+    if (proj.getData('hasHit')) return;
+    proj.setData('hasHit', true);
     proj.destroy();
-    this.damageTamalero();
+    this.damageTamalero('bolillo');
     this.showFloatingText(boss.x, boss.y - 30, 'HIT!', '#ffaa44');
   }
 
@@ -1142,6 +1173,8 @@ class Level1Scene extends Phaser.Scene {
   }
 
   applyDamage(player, amount, knockDirX, knockForceX, knockForceY, tintColor) {
+    if (!this._logApplyDmg) { this._logApplyDmg = true; console.log('[FUNC] applyDamage fired. HP=' + this.playerHP); }
+    if (!player || !player.body) return;
     // Double-check cooldown (safety)
     if (this.time.now < this.damageCooldownUntil) return;
 
@@ -1149,7 +1182,8 @@ class Level1Scene extends Phaser.Scene {
     this.damageCooldownUntil = this.time.now + 1500;
     this.isHurt = true;
 
-    this.playerHP -= amount;
+    // Cancel any active attack — damage interrupts attack
+    this.isAttacking = false;
 
     this.playerHP -= amount;
     this.hpText.setText('HP: ' + this.playerHP);
@@ -1159,28 +1193,36 @@ class Level1Scene extends Phaser.Scene {
     this.cameras.main.shake(150, 0.008);
 
     // Knockback
-    player.setVelocityX(knockDirX * knockForceX);
-    player.setVelocityY(knockForceY);
+    if (player && player.body) {
+      player.setVelocityX(knockDirX * knockForceX);
+      player.setVelocityY(knockForceY);
+    }
 
     // Visual feedback: tint + transparency
-    player.setTint(tintColor);
-    player.setAlpha(0.6);
+    if (player && player.active) {
+      player.setTint(tintColor);
+      player.setAlpha(0.6);
+    }
 
     // End invulnerability after 1500ms
     this.time.delayedCall(1500, () => {
       if (this.gameOver) return;
-      player.clearTint();
-      player.setAlpha(1);
+      if (player && player.active) {
+        player.clearTint();
+        player.setAlpha(1);
+      }
       this.isHurt = false;
     });
 
     // Check death
     if (this.playerHP <= 0) {
       this.gameOver = true;
-      player.setAlpha(1);
-      player.setTint(0xff0000);
-      player.anims.stop();
-      player.setVelocityX(0);
+      if (player && player.active) {
+        player.setAlpha(1);
+        player.setTint(0xff0000);
+        player.anims.stop();
+        if (player.body) player.setVelocityX(0);
+      }
       this.showGameOverScreen(false);
     }
   }
