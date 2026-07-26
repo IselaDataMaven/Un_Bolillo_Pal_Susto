@@ -1,0 +1,19 @@
+{
+  "name": "bolillo-pal-susto",
+  "version": "1.0.0",
+  "description": "Bolillo Pal Susto - Chicles Game",
+  "scripts": {
+    "build": "node build.js",
+    "start": "npx http-server . -p 8080 --cors -c-1"
+  },
+  "dependencies": {
+    "phaser": "3.60.0"
+  },
+  "devDependencies": {
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1",
+    "copy-webpack-plugin": "11.0.0",
+    "html-webpack-plugin": "5.5.3"
+  }
+}
