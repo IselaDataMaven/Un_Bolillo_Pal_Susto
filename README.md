@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="docs/images/logo.png" width="300" alt="Un Bolillo Pa'l Susto Logo">
+<img width="1024" height="512" alt="logo_un_bolillo_pal_susto" src="https://github.com/user-attachments/assets/ef1457ba-2ff3-4872-971f-c1701f645a81" />
+
 </p>
 
 <h1 align="center">
