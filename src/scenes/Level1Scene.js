@@ -192,15 +192,6 @@ class Level1Scene extends Phaser.Scene {
     this.attackKeyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
     this.attackKeyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 
-    // TEMP: Track S key to diagnose freeze
-    this.input.keyboard.on('keydown-S', function() {
-      console.log('[KEY S PRESSED] isAttacking=' + this.isAttacking +
-        ' isHurt=' + this.isHurt +
-        ' gameOver=' + this.gameOver +
-        ' bossActive=' + this.bossActive +
-        ' vx=' + Math.round(this.player.body.velocity.x));
-    }, this);
-
     // --- STATE ---
     this.isAttacking = false;
     this.facingRight = true;
@@ -227,7 +218,6 @@ class Level1Scene extends Phaser.Scene {
     // Attack animation complete
     this.player.on('animationcomplete-attack', () => {
       this.isAttacking = false;
-      console.log('[ATTACK END] animationcomplete fired. time=' + this.time.now);
     });
 
     // Safety: max attack duration to prevent permanent freeze
@@ -295,32 +285,11 @@ class Level1Scene extends Phaser.Scene {
     this.touchControls = { left: false, right: false, jump: false, attack: false };
     this.createTouchControls();
 
-    // --- TEMP DIAGNOSTIC: 100ms interval, only while near boss ---
-    this._diagActive = false;
-    this.time.addEvent({
-      delay: 100,
-      loop: true,
-      callback: function() {
-        if (!this.bossActive && this.player && this.tamalero) {
-          var d = Math.abs(this.player.x - this.tamalero.x);
-          if (d < 400) { this._diagActive = true; }
-        }
-        if (!this._diagActive) return;
-        console.log('[DIAG100] bossActive=' + this.bossActive +
-          ' introActive=' + this.bossIntroActive +
-          ' isAttacking=' + this.isAttacking +
-          ' atkAge=' + (this.isAttacking ? (this.time.now - this.attackStartTime) : 0) +
-          ' isHurt=' + this.isHurt +
-          ' onGround=' + (this.player.body ? (this.player.body.touching.down || this.player.body.blocked.down) : 'N/A') +
-          ' vx=' + (this.player.body ? Math.round(this.player.body.velocity.x) : 'N/A') +
-          ' vy=' + (this.player.body ? Math.round(this.player.body.velocity.y) : 'N/A') +
-          ' pActive=' + this.player.active +
-          ' pVisible=' + this.player.visible +
-          ' gameOver=' + this.gameOver +
-          ' bodyEnabled=' + (this.player.body ? this.player.body.enable : 'N/A'));
-      },
-      callbackScope: this
-    });
+    // Music: level 1 adventure theme
+    MusicManager.play(this, 'musica_juego', { volume: 0.55, loop: true, fadeIn: 1000 });
+
+    // Tamalero approach music trigger (one-time)
+    this._tamaleroMusicTriggered = false;
   }
 
   update() {
@@ -346,6 +315,27 @@ class Level1Scene extends Phaser.Scene {
 
     // Update boss
     this.updateTamalero();
+
+    // Music: transition to boss theme when approaching (one-time)
+    if (!this._tamaleroMusicTriggered && this.tamalero && this.player) {
+      var distToBoss = Math.abs(this.player.x - this.tamalero.x);
+      if (distToBoss < 450 && distToBoss > 100) {
+        this._tamaleroMusicTriggered = true;
+        // Warning text
+        var warnText = this.add.text(400, 150, '!!EL TAMALERO TE ESPERA!!', {
+          font: '18px monospace',
+          fill: '#ff4400',
+          stroke: '#000000',
+          strokeThickness: 4
+        }).setOrigin(0.5).setScrollFactor(0).setDepth(400);
+        this.cameras.main.shake(300, 0.008);
+        this.time.delayedCall(2000, () => {
+          if (warnText && warnText.active) warnText.destroy();
+        });
+        // Switch to boss music
+        MusicManager.play(this, 'pelea_tamalero', { volume: 0.70, loop: true, fadeIn: 1000 });
+      }
+    }
 
     if (this.isAttacking) {
       // Safety: force-reset if attack state exceeds 800ms (animation may have been interrupted)
@@ -374,7 +364,6 @@ class Level1Scene extends Phaser.Scene {
         // Ground attack - melee
         this.isAttacking = true;
         this.attackStartTime = this.time.now;
-        console.log('[ATTACK START] time=' + this.time.now + ' onGround=' + onGround);
         this.touchControls.attack = false;
         this.player.setVelocityX(0);
         this.player.anims.play('attack', true);
@@ -739,7 +728,6 @@ class Level1Scene extends Phaser.Scene {
     }
   }
   tamaleroMelee() {
-    if (!this._logMelee) { this._logMelee = true; console.log('[FUNC] tamaleroMelee fired'); }
     if (!this.tamalero || !this.tamalero.body) return;
     this.tamaleroAttacking = true;
     this._bossAttackStart = this.time.now;
@@ -971,6 +959,9 @@ class Level1Scene extends Phaser.Scene {
     this.gameOver = true;
     this.bossActive = false;
 
+    // Victory music
+    MusicManager.play(this, 'victoria', { volume: 0.7, loop: false, fadeIn: 500 });
+
     // Disable tamalero safely
     if (this.tamalero) {
       if (this.tamalero.body) this.tamalero.body.setEnable(false);
@@ -1010,7 +1001,6 @@ class Level1Scene extends Phaser.Scene {
   }
 
   hitByTamalero(player, boss) {
-    if (!this._logHitBoss) { this._logHitBoss = true; console.log('[FUNC] hitByTamalero fired'); }
     if (this.gameOver || !this.bossActive || this.bossDefeated) return;
     if (!player || !player.body) return;
     if (this.time.now < this.damageCooldownUntil) return;
@@ -1227,7 +1217,6 @@ class Level1Scene extends Phaser.Scene {
   }
 
   applyDamage(player, amount, knockDirX, knockForceX, knockForceY, tintColor) {
-    if (!this._logApplyDmg) { this._logApplyDmg = true; console.log('[FUNC] applyDamage fired. HP=' + this.playerHP); }
     if (!player || !player.body) return;
     // Double-check cooldown (safety)
     if (this.time.now < this.damageCooldownUntil) return;

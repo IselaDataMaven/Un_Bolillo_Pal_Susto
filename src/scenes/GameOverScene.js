@@ -11,6 +11,9 @@ class GameOverScene extends Phaser.Scene {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
+    // Music: lose theme
+    MusicManager.play(this, 'pierde', { volume: 0.6, loop: false, fadeIn: 500 });
+
     // Background
     this.add.rectangle(w / 2, h / 2, w, h, 0x2a0a0a);
 

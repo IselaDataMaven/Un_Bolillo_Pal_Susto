@@ -8,6 +8,9 @@ class IntroScene extends Phaser.Scene {
     const h = this.cameras.main.height;
     this.transitioning = false;
 
+    // Music: intro theme
+    MusicManager.play(this, 'intro', { volume: 0.6, loop: true, fadeIn: 1500 });
+
     // Background
     const bg = this.add.image(w / 2, h / 2, 'bg-calle');
     const scaleX = w / bg.width;

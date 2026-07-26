@@ -89,6 +89,20 @@ class PreloadScene extends Phaser.Scene {
     this.load.image('creditos', 'chicles/creditos_chicles.png');
 
     // --- LEVEL 2: ZUMBA ---
+
+    // --- AUDIO ---
+    this.load.audio('intro', 'chicles/sound/intro.mp3');
+    this.load.audio('musica_juego', 'chicles/sound/musica_juego.mp3');
+    this.load.audio('pelea_tamalero', 'chicles/sound/pelea_tamalero.mp3');
+    this.load.audio('pelea_cucaracha', 'chicles/sound/pelea_cucaracha.mp3');
+    this.load.audio('pelea_zumba', 'chicles/sound/pelea_zumba.mp3');
+    this.load.audio('victoria', 'chicles/sound/victoria.mp3');
+    this.load.audio('victoria_zumba', 'chicles/sound/victoria_zumba.mp3');
+    this.load.audio('pierde', 'chicles/sound/pierde.mp3');
+    this.load.audio('ataque_perros', 'chicles/sound/ataque_perros.mp3');
+    this.load.audio('microbusero', 'chicles/sound/microbusero.mp3');
+
+    // --- LEVEL 2: ZUMBA ASSETS ---
     this.load.image('zumba-bg1', 'chicles/ui/zumba_nivel_2/zumba_1.jpg');
     this.load.image('zumba-bg2', 'chicles/ui/zumba_nivel_2/zumba_2.jpg');
 

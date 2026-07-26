@@ -78,6 +78,9 @@ class ZumbaScene extends Phaser.Scene {
 
     // --- GAME STATE ---
     this.score = 0;
+
+    // Music: zumba theme
+    MusicManager.play(this, 'pelea_zumba', { volume: 0.60, loop: true, fadeIn: 1000 });
     this.combo = 0;
     this.round = 0;
     this.maxRounds = 8;
@@ -236,6 +239,9 @@ class ZumbaScene extends Phaser.Scene {
   winZumba() {
     this.sequenceActive = false;
     this.sequenceText.setText('');
+
+    // Victory music
+    MusicManager.play(this, 'victoria_zumba', { volume: 0.7, loop: false, fadeIn: 500 });
 
     var w = this.cameras.main.width;
 

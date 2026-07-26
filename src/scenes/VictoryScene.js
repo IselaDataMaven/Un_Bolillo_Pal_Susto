@@ -11,6 +11,9 @@ class VictoryScene extends Phaser.Scene {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
+    // Music: victory
+    MusicManager.play(this, 'victoria', { volume: 0.65, loop: false, fadeIn: 800 });
+
     // Background
     this.add.rectangle(w / 2, h / 2, w, h, 0x1a3a1a);
 
