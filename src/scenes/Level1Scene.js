@@ -668,6 +668,12 @@ class Level1Scene extends Phaser.Scene {
       this.bossHPBar.setVisible(true);
       this.drawBossHP();
       this.damageCooldownUntil = this.time.now + 800;
+
+      // EMERGENCY HACKATHON BYPASS: Complete level after 5 seconds
+      this.time.delayedCall(5000, () => {
+        this.completeLevel1Emergency();
+      });
+
       return;
     }
 
@@ -951,6 +957,54 @@ class Level1Scene extends Phaser.Scene {
     this.time.delayedCall(2000, () => {
       console.log('[LEVEL COMPLETE] -> ZumbaScene');
       this.gameOver = true;
+      this.scene.start('ZumbaScene', { score: this.score });
+    });
+  }
+
+  completeLevel1Emergency() {
+    // EMERGENCY BYPASS — guarantees Level1 -> ZumbaScene transition
+    if (this._emergencyTriggered) return;
+    this._emergencyTriggered = true;
+    console.log('[EMERGENCY LEVEL COMPLETE] triggered');
+
+    this.bossDefeated = true;
+    this.gameOver = true;
+    this.bossActive = false;
+
+    // Disable tamalero safely
+    if (this.tamalero) {
+      if (this.tamalero.body) this.tamalero.body.setEnable(false);
+      this.tamalero.setTint(0x444444);
+    }
+
+    // Destroy wall
+    if (this.bossWall) {
+      this.bossWall.destroy();
+      this.bossWall = null;
+    }
+
+    // Stop player
+    if (this.player && this.player.body) {
+      this.player.setVelocityX(0);
+      this.player.setVelocityY(0);
+    }
+
+    // Victory text
+    this.add.text(400, 180, '!Derrotaste al Tamalero!', {
+      font: '20px monospace',
+      fill: '#ff8800',
+      backgroundColor: '#000000cc',
+      padding: { x: 12, y: 8 }
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(500);
+
+    this.add.text(400, 220, '"!Mis tamales...!"', {
+      font: '14px monospace',
+      fill: '#ffcc00'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(500);
+
+    // Transition to ZumbaScene after 1 second
+    this.time.delayedCall(1000, () => {
+      console.log('[TRANSITION] Starting ZumbaScene');
       this.scene.start('ZumbaScene', { score: this.score });
     });
   }
