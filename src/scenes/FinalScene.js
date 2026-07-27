@@ -85,7 +85,13 @@ class FinalScene extends Phaser.Scene {
     this.time.delayedCall(7000, () => {
       text.setText('Las dos comenzaron a reir.');
     });
-    this.time.delayedCall(9000, () => {
+    this.time.delayedCall(8500, () => {
+      text.setText('Chicles salvo a su abuela, al Metro y a la humanidad.');
+    });
+    this.time.delayedCall(10500, () => {
+      text.setText('Tambien salvo a las vacas de convertirse en leche de sabores extraterrestres.');
+    });
+    this.time.delayedCall(13000, () => {
       self.cameras.main.fadeOut(1000, 0, 0, 0);
       self.cameras.main.once('camerafadeoutcomplete', () => {
         self.showCredits(w, h);
