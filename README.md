@@ -3,7 +3,9 @@
 
 # 🌮 Un Bolillo Pa'l Susto
 
-![Gameplay Banner](./chicles/ui/final/final_1.jpg)
+![Phaser](https://img.shields.io/badge/Phaser-3-blue)
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
 
 ## 🎮 Gameplay
 
@@ -197,6 +199,31 @@ Creado por:
 
 Proyecto desarrollado para Hackathon con AWS + Kiro.
 
+# ☁️ Arquitectura AWS
+
+El proyecto utiliza servicios cloud para apoyar la experiencia del jugador:
+
+Jugador
+|
+↓
+Amazon S3 + CloudFront
+|
+↓
+Phaser 3 Web Game
+
+IA Generativa:
+|
+↓
+Amazon Bedrock
+|
+↓
+Contenido narrativo y experiencias dinámicas
+
+# 🚀 Demo
+
+🎮 Juega aquí:
+
+[Un Bolillo Pa'l Susto - Demo Online](TU_URL_AWS)
 
 
 
