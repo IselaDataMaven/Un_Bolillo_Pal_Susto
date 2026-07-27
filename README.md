@@ -149,7 +149,7 @@ Chicles logra salvar a su abuela y descubre que incluso las vacas estaban involu
 
 # 🏆 Final de la historia
 
-Después de derrotar al Gusano Espacial y liberar a su abuela:
+Después de enfrentar la amenaza del Gusano Espacial y liberar a su abuela...
 
 Chicles logra salvar:
 
