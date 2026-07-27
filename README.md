@@ -1,177 +1,202 @@
 <p align="center">
 <img width="1024" height="512" alt="logo_un_bolillo_pal_susto" src="https://github.com/user-attachments/assets/ef1457ba-2ff3-4872-971f-c1701f645a81" />
 
-</p>
+# 🌮 Un Bolillo Pa'l Susto
 
-<h1 align="center">
-🥖 Un Bolillo Pa'l Susto
-</h1>
+![Gameplay Banner](./chicles/ui/final/final_1.jpg)
 
-<p align="center">
-<i>Porque en México no usamos pociones...</i>
-<br>
-<b>¡Nos echamos un bolillo pa'l susto!</b>
-</p>
+## 🎮 Gameplay
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Made%20in-Mexico-%23006847?style=for-the-badge&logo=mexico" alt="Made in Mexico">
-  <img src="https://img.shields.io/badge/Phaser-3-blue?style=for-the-badge&logo=phaser" alt="Phaser 3">
-  <img src="https://img.shields.io/badge/JavaScript-ES6-yellow?style=for-the-badge&logo=javascript" alt="JavaScript">
-  <img src="https://img.shields.io/badge/AWS-Bedrock-orange?style=for-the-badge&logo=amazon-aws" alt="AWS Bedrock">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
-</p>
+> "¡Chicles, corre! Algo extraño está pasando debajo del Metro..."
+
+**Un Bolillo Pa'l Susto** es un videojuego de acción y aventura 2D desarrollado con **Phaser 3**, JavaScript y potenciado con tecnologías de inteligencia artificial de **AWS**.
+
+Controlas a **Chicles**, una estudiante mexicana que emprende un viaje inesperado por las calles de la Ciudad de México después de descubrir que algo extraño está ocurriendo alrededor del Metro.
+
+Lo que parecía un camino normal para llegar a casa de su abuela se convierte en una misión para salvar a su familia, descubrir el misterio del Gusano Espacial y detener una invasión extraterrestre.
+
+Armada con su pistola de chicles, bolillos de poder y mucha valentía, Chicles deberá enfrentarse a criaturas urbanas, alienígenas y una batalla final contra la persona más importante de su vida: su propia abuela.
 
 ---
 
-## 🎥 Gameplay
+# 🎬 Historia
 
-<p align="center">
-  <img src="docs/gifs/gameplay.gif" width="850" alt="Gameplay Animation">
-</p>
+## "Ya me voy, abuelita..." — Chicles
 
-> *"¡Corre, Chicles! ¡Ahí viene el microbús sin frenos y el perro del vecino!"*
+Chicles sale de la escuela rumbo a casa de su abuela, sin imaginar que algo extraño está ocurriendo bajo la ciudad.
 
-**Un Bolillo Pa'l Susto** es un beat 'em up frenético desarrollado con **Phaser 3** y potenciado con **AWS Bedrock**. Controlas a **Chicles**, una valiente estudiante mexicana que debe abrirse paso a trancazos, chicles y bolillos a través de las calles más caóticas de la CDMX para llegar a salvo a casa de su abuela.
+Mientras avanza por las calles de la CDMX, descubre señales de una invasión que mezcla tecnología alienígena, criaturas extrañas y los secretos escondidos del Metro.
 
----
+Su misión:
 
-## 🎬 Intro
-
-<p align="center">
-  <img src="docs/gifs/chicles_intro.gif" width="600" alt="Chicles Intro">
-</p>
-
-> *"Ya me voy, mamitita..."* — **Chicles**
-> 
-> *"¡Pórtate mal para que te vaya bien!"* — **La Abuela**
+🌮 Llegar hasta su abuela.
+👽 Descubrir qué está pasando.
+🐄 Salvar a las vacas abducidas.
+🌎 Detener la amenaza extraterrestre.
 
 ---
 
-## 🚴 Poder del Bolillo
+# 👽 La amenaza del Gusano Espacial
 
-<p align="center">
-  <img src="docs/gifs/bicicleta.gif" width="600" alt="Bicicleta Powerup">
-</p>
+Debajo del Metro existe una criatura gigantesca conocida como:
 
-Después de recolectar y comer suficientes **bolillos curativos**, la adrenalina sube al máximo y **¡Chicles desbloquea su bicicleta legendaria!** arrasando con todo lo que se cruce en su camino.
+## 🪱 El Gusano Espacial
 
----
+Una entidad alienígena que ha creado un laboratorio secreto donde experimenta con seres vivos y controla a diferentes criaturas.
 
-## 🫧 Escudo: Bolsa de Agua
+Durante su viaje, Chicles deberá atravesar:
 
-<p align="center">
-  <img src="docs/gifs/agua.gif" width="450" alt="Bolsa de Agua Shield">
-</p>
-
-La clásica **bolsita con agua colgada en la puerta** (o en el inventario) actúa como un escudo místico que protege a Chicles de los ataques y maldiciones urbanas.
+* 🚇 Estaciones del Metro infectadas.
+* 🪳 Criaturas del laboratorio.
+* 👽 Alienígenas invasores.
+* 🦇 Murcielajolotes espaciales.
+* 🪱 El interior del Gusano Espacial.
 
 ---
 
-## 👹 Bestiario Urbano (Enemigos)
+# 🥖 Poder del Bolillo
 
-Cuidado con los peligros que acechan en cada esquina de la ciudad:
+El bolillo no es solo comida...
 
-| Enemigo | Descripción | Nivel de Peligro |
-| :---: | :--- | :---: |
-| 🐀 **Rata Callejera** | Ágiles y portadoras de sustos repentinos en las coladeras. | ⭐⭐ |
-| 🫔 **El Tamalero** | Te ataca con vapor hirviendo y tamales oaxaqueños explosivos. | ⭐⭐⭐⭐ |
-| 🪳 **Cucaracha Voladora** | El jefe menor más terrorífico de todos los veranos chilangos. | ⭐⭐⭐⭐⭐ |
-| 🚌 **Microbusero Guerrero** | Conduce a 120 km/h en zona escolar sin frenos ni piedad. | ⭐⭐⭐⭐⭐ |
+Es supervivencia. 😎
 
----
+Al recolectar bolillos durante la aventura, Chicles recupera energía y puede continuar su misión.
 
-## ❤️ Personajes Principales
-
-<p align="center">
-  <img src="docs/gifs/chicles_saluda.gif" width="160" alt="Chicles">
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/gifs/abuela.gif" width="160" alt="Abuela">
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/gifs/tamalero.gif" width="160" alt="Tamalero">
-</p>
-<p align="center">
-  <b>Chicles</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Abuela</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>El Tamalero (Boss)</b>
-</p>
+Los bolillos representan la fuerza mexicana para superar cualquier susto.
 
 ---
 
-## 🎮 Controles
+# 🍬 Poder del Chicle
 
-Domina las técnicas milenarias de supervivencia urbana:
+El arma principal de Chicles.
 
-| Tecla | Acción |
-| :---: | :--- |
-| ⬅️ ➡️ | Moverse a los lados |
-| ⬆️ | Saltar obstáculos / Evasión |
-| `SPACE` | Golpear / Lanzar bomba de chicle |
-| `ESC` | Pausa (Tomar aire) |
+Con su pistola de chicles puede lanzar ataques contra enemigos y criaturas alienígenas.
+
+Cuando obtiene poderes especiales puede aumentar su velocidad de ataque y mejorar sus habilidades.
 
 ---
 
-## 🌎 Mapa del Recorrido
+# 💧 Bolsa de Agua
 
-Viaja a través de las dimensiones del folclor mexicano:
+La clásica bolsa de agua mexicana se convierte en un objeto especial de protección.
 
-```text
-  [ Barrio Tradicional ]
-            ↓
-  [ Mercado de la Merced ]
-            ↓
-  [ Metro Chabacano (Hora Pico) ]
-            ↓
-  [ Centro Histórico ]
-            ↓
-  [ 🪦 Mictlán (Nivel Final) ]
-
-
-
-
-
-
-
-
-
-
-
-<p align="center">
-
-<img src="docs/images/logo.gif" width="900"/>
-
-</p>
-
-<p align="center">
-
-<img src="docs/gifs/chicles_saluda.gif" width="220"/>
-
-</p>
-
-<h2 align="center">
-
-🇲🇽 Beat'em Up • Plataforma • Pixel Art • Folclore Mexicano 🇲🇽
-
-</h2>
-
-<p align="center">
-
-Porque en México no usamos pociones...
-
-<b>¡Nos echamos un bolillo pa'l susto!</b>
-
-</p>
+Funciona como escudo contra ataques enemigos y ayuda a Chicles a sobrevivir durante los combates más difíciles.
 
 ---
 
-<p align="center">
+# 🚀 Super Jump
 
-<img src="https://img.shields.io/badge/🎮-Phaser_3-blue?style=for-the-badge">
+Un poder especial que permite a Chicles alcanzar lugares imposibles.
 
-<img src="https://img.shields.io/badge/☁️-AWS_Bedrock-orange?style=for-the-badge">
+Será clave durante la batalla final contra la Abuela Malicia.
 
-<img src="https://img.shields.io/badge/💻-JavaScript-yellow?style=for-the-badge">
+---
 
-<img src="https://img.shields.io/badge/🇲🇽-Made_in_Mexico-success?style=for-the-badge">
+# 👹 Bestiario
 
-</p>
+| Enemigo                  | Descripción                                                | Peligro |
+| ------------------------ | ---------------------------------------------------------- | ------- |
+| 🫔 Tamalero              | El primer gran enemigo. Usa ataques de tamales explosivos. | ⭐⭐⭐⭐    |
+| 🪳 Cucarachas del Gusano | Criaturas que aparecen dentro del laboratorio espacial.    | ⭐⭐⭐     |
+| 🦇 Murcielajolote        | Criatura híbrida espacial que ataca desde el aire.         | ⭐⭐⭐⭐⭐   |
+| 👽 Alienígenas           | Seres del laboratorio del Gusano Espacial.                 | ⭐⭐⭐⭐    |
+| 👵 Abuela Malicia        | La batalla final. Controlada por fuerzas alienígenas.      | ⭐⭐⭐⭐⭐   |
+
+---
+
+# ❤️ Personajes Principales
+
+```
+🥖 Chicles
+La heroína de la historia.
+Una estudiante mexicana que nunca se rinde.
+
+👵 Abuela Malicia
+La persona que Chicles debe rescatar del control alienígena.
+
+👽 Los Aliens
+La amenaza detrás del misterio del Metro.
+
+🪱 Gusano Espacial
+La criatura responsable de la invasión.
+```
+
+---
+
+# 🎮 Niveles
+
+## Nivel 1 — El Tamalero 🌮
+
+Chicles comienza su aventura enfrentándose al primer enemigo.
+
+## Nivel 2 — El Zumba 💃
+
+Una prueba de ritmo y supervivencia.
+
+## Nivel 3 — El Hoyo del Gusano 🪱
+
+Una caída dentro del Gusano Espacial donde debe destruir criaturas y sobrevivir.
+
+## Nivel 4 — Laboratorio Alienígena 👽
+
+La batalla final contra alienígenas, murcielajolotes y la Abuela Malicia.
+
+## Final 🎬
+
+Chicles logra salvar a su abuela y descubre que incluso las vacas estaban involucradas en el misterio extraterrestre.
+
+---
+
+# 🏆 Final de la historia
+
+Después de derrotar al Gusano Espacial y liberar a su abuela:
+
+Chicles logra salvar:
+
+✅ A su familia.
+✅ El Metro de la Ciudad de México.
+✅ A las vacas abducidas.
+✅ A la humanidad.
+
+Pero descubre una última sorpresa...
+
+Después de salvar el mundo:
+
+📚 ¡Era sábado y no había escuela!
+
+---
+
+# 🎮 Controles
+
+| Tecla         | Acción              |
+| ------------- | ------------------- |
+| ⬅️ ➡️         | Movimiento          |
+| ⬆️            | Saltar / Super Jump |
+| SPACE / X / A | Disparar chicles    |
+| ESC           | Pausa               |
+
+---
+
+# 🛠️ Tecnologías
+
+* Phaser 3
+* JavaScript
+* WebGL
+* AWS
+* Amazon Bedrock
+* Kiro AI
+
+---
+
+# 👩‍💻 Desarrollo
+
+Creado por:
+
+**Isela L. García**
+✨ La Hechicera del Código ✨
+
+Proyecto desarrollado para Hackathon con AWS + Kiro.
+
 
 
 
