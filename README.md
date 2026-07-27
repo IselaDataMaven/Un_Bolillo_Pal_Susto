@@ -9,6 +9,8 @@
 
 ## 🎮 Gameplay
 
+<img width="256" height="256" alt="chicles_saluda" src="https://github.com/user-attachments/assets/fad40561-2a3e-4e16-b3b5-b60d7888f8ae" />
+
 > "¡Chicles, corre! Algo extraño está pasando debajo del Metro..."
 
 **Un Bolillo Pa'l Susto** es un videojuego de acción y aventura 2D desarrollado con **Phaser 3**, JavaScript y potenciado con tecnologías de inteligencia artificial de **AWS**.
